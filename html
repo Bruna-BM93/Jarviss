@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login Jarvis</title>
+</head>
+<body>
+  <h2>Login</h2>
+  <form onsubmit="fazerLogin(); return false;">
+    <input type="text" id="usuario" placeholder="Usuário">
+    <input type="password" id="senha" placeholder="Senha">
+    <button type="submit">Entrar</button>
+  </form>
+  <script>
+    async function fazerLogin() {
+      const usuario = document.getElementById('usuario').value;
+      const senha = document.getElementById('senha').value;
+
+      const resposta = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ usuario, senha })
+      });
+
+      const resultado = await resposta.json();
+      alert(resultado.mensagem || resultado.erro);
+    }
+  </script>
+</body>
+</html>
