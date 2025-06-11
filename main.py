@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
+import json
+import urllib.request
 
 DB_PATH = 'jarvis.db'
 
@@ -11,7 +14,35 @@ FEATURES_BY_PLAN = {
     'Premium': {'basica', 'plus', 'premium'},
 }
 
+# Configurações da Infinity Pay
+INFINITY_PAY_TOKEN = os.environ.get('INFINITY_PAY_TOKEN')
+INFINITY_PAY_URL = 'https://api.infinitypay.com.br/v2/charges'
+PLAN_PRICES = {
+    'Plus': 1500,     # em centavos (R$ 15,00)
+    'Premium': 3000,  # em centavos (R$ 30,00)
+}
+
 app = Flask(__name__)
+
+
+def create_infinity_charge(valor_centavos: int, metodo: str):
+    """Envia uma requisicao de cobranca para a Infinity Pay."""
+    if not INFINITY_PAY_TOKEN:
+        return {'erro': 'Token da Infinity Pay nao configurado'}
+
+    payload = json.dumps({
+        'amount': valor_centavos,
+        'payment_type': 'CREDIT_CARD' if metodo == 'cartao' else 'PIX'
+    }).encode()
+
+    req = urllib.request.Request(INFINITY_PAY_URL, data=payload)
+    req.add_header('Content-Type', 'application/json')
+    req.add_header('Authorization', f'Bearer {INFINITY_PAY_TOKEN}')
+    try:
+        with urllib.request.urlopen(req) as resp:
+            return json.load(resp)
+    except Exception as exc:
+        return {'erro': str(exc)}
 
 
 def init_db():
@@ -56,6 +87,7 @@ def register():
     cnpj = dados.get('cnpj')
     plano = dados.get('plano', 'Gratuito')
     pagamento = dados.get('pagamento') if plano != 'Gratuito' else None
+    pagamento_info = None
 
     if not nome or not usuario or not senha:
         return jsonify({'erro': 'Dados incompletos'}), 400
@@ -66,6 +98,13 @@ def register():
     if plano != 'Gratuito' and pagamento not in ('pix', 'cartao'):
         return jsonify({'erro': 'Metodo de pagamento invalido'}), 400
 
+    if plano != 'Gratuito':
+        valor = PLAN_PRICES.get(plano, 0)
+        resp = create_infinity_charge(valor, pagamento)
+        if 'erro' in resp:
+            return jsonify({'erro': 'Falha ao processar pagamento', 'detalhe': resp['erro']}), 502
+        pagamento_info = json.dumps({'metodo': pagamento, 'id': resp.get('id')})
+
     senha_hash = generate_password_hash(senha)
     try:
         con = sqlite3.connect(DB_PATH)
@@ -73,7 +112,7 @@ def register():
         cur.execute(
             'INSERT INTO usuarios (nome, usuario, senha, cpf, cnpj, plano, pagamento) '
             'VALUES (?, ?, ?, ?, ?, ?, ?)',
-            (nome, usuario, senha_hash, cpf, cnpj, plano, pagamento)
+            (nome, usuario, senha_hash, cpf, cnpj, plano, pagamento_info)
         )
         con.commit()
     except sqlite3.IntegrityError:

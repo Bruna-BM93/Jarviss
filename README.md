@@ -10,7 +10,7 @@ python3 main.py
 
 A aplicação será iniciada em `http://localhost:5000`.
 
-O cadastro inicial solicita nome da empresa, CPF ou CNPJ, além do usuário e senha. Para planos pagos é possível escolher pagamento via **Pix** (liberação por um mês) ou **cartão de crédito**.
+O cadastro inicial solicita nome da empresa, CPF ou CNPJ, além do usuário e senha. Para planos pagos é possível escolher pagamento via **Pix** ou **cartão de crédito**. Os pagamentos são processados automaticamente pela **Infinity Pay**. Defina a variável de ambiente `INFINITY_PAY_TOKEN` com o token da sua conta para habilitar a integração.
 
 ## Geração de APK
 
