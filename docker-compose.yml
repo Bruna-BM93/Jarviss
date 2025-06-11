@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      # - INFINITY_PAY_TOKEN=${INFINITY_PAY_TOKEN} # Example: pass an env variable
+      # You can set INFINITY_PAY_TOKEN here directly or use an .env file
+      # For example, if you have an .env file with:
+      # INFINITY_PAY_TOKEN=your_actual_token_here
+      # Docker Compose will automatically pick it up.
+      # Alternatively, uncomment and set directly:
+      INFINITY_PAY_TOKEN: "your_infinity_pay_token_goes_here" # Replace with actual token or use .env
+    volumes:
+      # Mount the local SQLite database file into the container for persistence
+      # This ensures that your data is not lost when the container restarts.
+      # Adjust the source path if your jarvis.db is located elsewhere locally.
+      - ./jarvis.db:/app/jarvis.db
+    # If you prefer a named volume for the database (managed by Docker):
+    # volumes:
+    #   - jarvis_data:/app
+# volumes:
+#   jarvis_data:
