@@ -1,20 +1,23 @@
 import sqlite3
+from flask import Flask, request, jsonify
+
 print(sqlite3.sqlite_version)
 
+
 def conectar():
-    con = sqlite3.connect("jarvis.db")
-    return con
+    """Cria uma conexão com o banco de dados SQLite."""
+    return sqlite3.connect("jarvis.db")
 
-
-from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-@app.route('/')
+
+@app.route("/")
 def home():
     return "Bem-vindo ao Jarvis API"
 
-@app.route('/login', methods=['POST'])
+
+@app.route("/login", methods=["POST"])
 def login():
     dados = request.json
     usuario = dados.get("usuario")
@@ -23,18 +26,12 @@ def login():
         return jsonify({"mensagem": "Login autorizado"})
     return jsonify({"erro": "Usuário ou senha incorretos"}), 401
 
-if __name__ == '__main__':
-    app.run(debug=True)
 
-@app.route('/logout', methods=['POST'])
+@app.route("/logout", methods=["POST"])
 def logout():
-    # Aqui você pode adicionar lógica para encerrar a sessão do usuário
+    """Endpoint simples para logout."""
     return jsonify({"mensagem": "Logout realizado com sucesso"})
-{
-  "usuario": "admin",
-  "senha": "123"
-}
 
-{
-  "mensagem": "Login autorizado"
-}
+
+if __name__ == "__main__":
+    app.run(debug=True)
