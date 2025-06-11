@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar</title>
+</head>
+<body>
+<h2>Criar Conta</h2>
+<form id="form-register">
+    <input type="text" id="nome" placeholder="Nome da empresa" required>
+    <input type="text" id="cpf" placeholder="CPF">
+    <input type="text" id="cnpj" placeholder="CNPJ">
+    <input type="text" id="usuario" placeholder="Usuário" required>
+    <input type="password" id="senha" placeholder="Senha" required>
+    <select id="plano">
+        <option value="Gratuito">Gratuito</option>
+        <option value="Plus">Plus</option>
+        <option value="Premium">Premium</option>
+    </select>
+    <label>Pagamento (para planos pagos):</label>
+    <select id="pagamento">
+        <option value="pix">Pix (1 mês)</option>
+        <option value="cartao">Cartão de crédito</option>
+    </select>
+    <button type="submit">Registrar</button>
+</form>
+<script>
+document.getElementById('form-register').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nome = document.getElementById('nome').value;
+    const cpf = document.getElementById('cpf').value;
+    const cnpj = document.getElementById('cnpj').value;
+    const usuario = document.getElementById('usuario').value;
+    const senha = document.getElementById('senha').value;
+    const plano = document.getElementById('plano').value;
+    const pagamento = document.getElementById('pagamento').value;
+    const resp = await fetch('/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({nome, cpf, cnpj, usuario, senha, plano, pagamento})
+    });
+    const data = await resp.json();
+    alert(data.mensagem || data.erro);
+});
+</script>
+</body>
+</html>
