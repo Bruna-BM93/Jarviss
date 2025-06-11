@@ -24,10 +24,19 @@ def init_db():
         "nome TEXT NOT NULL," \
         "usuario TEXT NOT NULL UNIQUE," \
         "senha TEXT NOT NULL," \
+        "cpf TEXT," \
+        "cnpj TEXT," \
         "plano TEXT NOT NULL DEFAULT 'Gratuito'," \
+        "pagamento TEXT," \
         "inadimplente INTEGER NOT NULL DEFAULT 0"
         ")"
     )
+    # adjust columns for older databases
+    for coluna, tipo in (('cpf', 'TEXT'), ('cnpj', 'TEXT'), ('pagamento', 'TEXT')):
+        try:
+            cur.execute(f"ALTER TABLE usuarios ADD COLUMN {coluna} {tipo}")
+        except sqlite3.OperationalError:
+            pass
     con.commit()
     con.close()
 
@@ -43,19 +52,28 @@ def register():
     nome = dados.get('nome')
     usuario = dados.get('usuario')
     senha = dados.get('senha')
+    cpf = dados.get('cpf')
+    cnpj = dados.get('cnpj')
     plano = dados.get('plano', 'Gratuito')
+    pagamento = dados.get('pagamento') if plano != 'Gratuito' else None
+
     if not nome or not usuario or not senha:
         return jsonify({'erro': 'Dados incompletos'}), 400
+    if not cpf and not cnpj:
+        return jsonify({'erro': 'CPF ou CNPJ obrigatorio'}), 400
     if plano not in PLANS:
         return jsonify({'erro': 'Plano invalido'}), 400
+    if plano != 'Gratuito' and pagamento not in ('pix', 'cartao'):
+        return jsonify({'erro': 'Metodo de pagamento invalido'}), 400
 
     senha_hash = generate_password_hash(senha)
     try:
         con = sqlite3.connect(DB_PATH)
         cur = con.cursor()
         cur.execute(
-            'INSERT INTO usuarios (nome, usuario, senha, plano) VALUES (?, ?, ?, ?)',
-            (nome, usuario, senha_hash, plano)
+            'INSERT INTO usuarios (nome, usuario, senha, cpf, cnpj, plano, pagamento) '
+            'VALUES (?, ?, ?, ?, ?, ?, ?)',
+            (nome, usuario, senha_hash, cpf, cnpj, plano, pagamento)
         )
         con.commit()
     except sqlite3.IntegrityError:
