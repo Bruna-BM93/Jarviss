@@ -1,4 +1,8 @@
+h109du-codex/criar-app-do-zero
+from flask import Flask, request, jsonify, render_template
+
 from flask import Flask, request, jsonify
+main
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
@@ -90,6 +94,13 @@ def index():
     return jsonify({"mensagem": "Bem-vindo ao Jarviss API"})
 
 
+h109du-codex/criar-app-do-zero
+@app.route("/jarviss")
+def jarviss_page():
+    return render_template("jarviss.html")
+
+
+main
 @app.route('/register', methods=['POST'])
 def register():
     dados = request.json or {}
