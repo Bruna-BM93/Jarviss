@@ -1,3 +1,39 @@
+import re
+import logging
+from datetime import datetime, timedelta
+import jwt
+CPF_RE = re.compile(r'^\d{11}$')
+CNPJ_RE = re.compile(r'^\d{14}$')
+PASSWORD_RE = re.compile(r'^(?=.*\d).{6,}$')
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+JWT_SECRET = os.environ.get('JWT_SECRET', 'CHANGE_ME')
+
+def generate_token(usuario: str) -> str:
+    payload = {
+        'sub': usuario,
+        'exp': datetime.utcnow() + timedelta(hours=1)
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm='HS256')
+
+
+def token_required(f):
+    def wrapper(*args, **kwargs):
+        auth = request.headers.get('Authorization', '')
+        if not auth.startswith('Bearer '):
+            return jsonify({'erro': 'Token ausente'}), 401
+        token = auth.split(' ', 1)[1]
+        try:
+            jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        except Exception:
+            return jsonify({'erro': 'Token invalido'}), 401
+        return f(*args, **kwargs)
+    wrapper.__name__ = f.__name__
+    return wrapper
+
+
 h109du-codex/criar-app-do-zero
 from flask import Flask, request, jsonify, render_template
 
@@ -85,10 +121,23 @@ def init_db():
             cur.execute(f"ALTER TABLE usuarios ADD COLUMN {coluna} {tipo}")
         except sqlite3.OperationalError:
             pass
-    con.commit()
+    if cpf and not CPF_RE.match(cpf):
+        return jsonify({'erro': 'CPF invalido'}), 400
+    if cnpj and not CNPJ_RE.match(cnpj):
+        return jsonify({'erro': 'CNPJ invalido'}), 400
+    if not PASSWORD_RE.match(senha):
+        return jsonify({'erro': 'Senha fraca'}), 400
+            logger.error('Falha Infinity Pay: %s', resp['erro'])
+            return jsonify({'erro': 'Falha ao processar pagamento'}), 502
     con.close()
 
-
+        token = generate_token(usuario)
+        return jsonify({'mensagem': msg, 'token': token}), 200
+@token_required
+@token_required
+@token_required
+@token_required
+    logger.info('Iniciando Jarviss API na porta 5000')
 @app.route('/')
 def index():
     return jsonify({"mensagem": "Bem-vindo ao Jarviss API"})

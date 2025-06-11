@@ -8,8 +8,16 @@ Este repositório contém um exemplo simplificado de API em Flask para registrar
 python3 main.py
 ```
 
+Para executar em um contêiner Docker:
+
+```bash
+docker compose up --build
+```
+
 A aplicação será iniciada em `http://localhost:5000`.
- h109du-codex/criar-app-do-zero
+O cadastro inicial solicita nome da empresa, CPF ou CNPJ, além do usuário e senha. Para planos pagos é possível escolher pagamento via **Pix** ou **cartão de crédito**. Os pagamentos são processados automaticamente pela **Infinity Pay**. Defina a variável de ambiente `INFINITY_PAY_TOKEN` com o token da sua conta para habilitar a integração. Configure também `JWT_SECRET` para personalizar a chave dos tokens. Nunca compartilhe esses segredos publicamente e utilize HTTPS em produção.
+
+Tokens JWT são gerados no login e devem ser enviados no cabeçalho `Authorization: Bearer <token>` para acessar os demais endpoints.
 Visite http://localhost:5000/jarviss para acessar a interface web com uma imagem de robô inteligente.
 
  main

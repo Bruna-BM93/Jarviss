@@ -1,0 +1,9 @@
+version: '3'
+services:
+  jarviss:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - INFINITY_PAY_TOKEN=${INFINITY_PAY_TOKEN}
+      - JWT_SECRET=${JWT_SECRET:-CHANGE_ME}
