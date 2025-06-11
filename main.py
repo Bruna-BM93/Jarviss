@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
@@ -89,6 +89,10 @@ def init_db():
 def index():
     return jsonify({"mensagem": "Bem-vindo ao Jarviss API"})
 
+
+@app.route("/jarviss")
+def jarviss_page():
+    return render_template("jarviss.html")
 
 @app.route('/register', methods=['POST'])
 def register():
