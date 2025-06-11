@@ -11,6 +11,7 @@ python3 main.py
 A aplicação será iniciada em `http://localhost:5000`.
 
 O cadastro inicial solicita nome da empresa, CPF ou CNPJ, além do usuário e senha. Para planos pagos é possível escolher pagamento via **Pix** ou **cartão de crédito**. Os pagamentos são processados automaticamente pela **Infinity Pay**. Defina a variável de ambiente `INFINITY_PAY_TOKEN` com o token da sua conta para habilitar a integração.
+As cobranças são emitidas em nome **Jarviss** (CNPJ `46102173000111`) e encaminhadas para a conta da tag `$nalenhacomferreira` no banco Cloudwalk (código `542`, agência `001`, conta `989248-7`).
 
 ## Geração de APK
 

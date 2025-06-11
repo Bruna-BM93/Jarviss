@@ -17,6 +17,16 @@ FEATURES_BY_PLAN = {
 # Configurações da Infinity Pay
 INFINITY_PAY_TOKEN = os.environ.get('INFINITY_PAY_TOKEN')
 INFINITY_PAY_URL = 'https://api.infinitypay.com.br/v2/charges'
+# Dados da conta que recebe os pagamentos
+INFINITY_PAY_RECEIVER = {
+    'tag': '$nalenhacomferreira',
+    'name': 'Jarviss',
+    'document': '46102173000111',
+    'bank_code': '542',
+    'agency': '001',
+    'account': '989248-7',
+    'bank_name': 'Cloudwalk instituicao de pagamento'
+}
 PLAN_PRICES = {
     'Plus': 1500,     # em centavos (R$ 15,00)
     'Premium': 3000,  # em centavos (R$ 30,00)
@@ -32,7 +42,10 @@ def create_infinity_charge(valor_centavos: int, metodo: str):
 
     payload = json.dumps({
         'amount': valor_centavos,
-        'payment_type': 'CREDIT_CARD' if metodo == 'cartao' else 'PIX'
+        'payment_type': 'CREDIT_CARD' if metodo == 'cartao' else 'PIX',
+        'receiver': INFINITY_PAY_RECEIVER,
+        'description': 'Pagamento Jarviss',
+        'statement_descriptor': 'Jarviss'
     }).encode()
 
     req = urllib.request.Request(INFINITY_PAY_URL, data=payload)
