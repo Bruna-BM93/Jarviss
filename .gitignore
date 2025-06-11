@@ -1,3 +1,6 @@
 venv
 banco.py
 .env
+
+jarvis.db
+__pycache__/
