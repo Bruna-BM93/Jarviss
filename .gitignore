@@ -3,6 +3,11 @@ banco.py
 .env
 
 jarvis.db
+idfwsp-codex/criar-app-do-zero
+__pycache__/
+flutter_app/build/
+flutter_app/.dart_tool/
+=======
  h109du-codex/criar-app-do-zero
 __pycache__/
 
@@ -10,3 +15,4 @@ __pycache__/
 __pycache__/
  main
  main
+main

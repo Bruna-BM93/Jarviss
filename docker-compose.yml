@@ -1,11 +1,21 @@
+idfwsp-codex/criar-app-do-zero
+version: '3'
+services:
+  jarviss:
+
 version: '3.8'
 
 services:
   web:
+main
     build: .
     ports:
       - "5000:5000"
     environment:
+idfwsp-codex/criar-app-do-zero
+      - INFINITY_PAY_TOKEN=${INFINITY_PAY_TOKEN}
+      - JWT_SECRET=${JWT_SECRET:-CHANGE_ME}
+
       # - INFINITY_PAY_TOKEN=${INFINITY_PAY_TOKEN} # Example: pass an env variable
       # You can set INFINITY_PAY_TOKEN here directly or use an .env file
       # For example, if you have an .env file with:
@@ -23,3 +33,4 @@ services:
     #   - jarvis_data:/app
 # volumes:
 #   jarvis_data:
+main

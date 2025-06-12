@@ -1,3 +1,8 @@
 Flask
 Werkzeug
+idfwsp-codex/criar-app-do-zero
+requests
+PyJWT
+
 gunicorn
+main

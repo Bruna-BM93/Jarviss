@@ -1,3 +1,11 @@
+idfwsp-codex/criar-app-do-zero
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "main:app"]
+=======
 # Use an official Python runtime as a parent image
 FROM python:3.9-slim
 
@@ -23,3 +31,4 @@ ENV FLASK_APP=main.py
 
 # Command to run the application using Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
+main
