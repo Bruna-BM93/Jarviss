@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar</title>
+</head>
+<body>
+<h2>Criar Conta</h2>
+<form id="form-register">
+    <input type="text" id="nome" placeholder="Nome da empresa" required>
+    <input type="text" id="cpf" placeholder="CPF">
+    <input type="text" id="cnpj" placeholder="CNPJ">
+    <input type="text" id="cep" placeholder="CEP">
+    <input type="text" id="logradouro" placeholder="Logradouro">
+    <input type="text" id="numero" placeholder="Número">
+    <input type="text" id="bairro" placeholder="Bairro">
+    <input type="text" id="cidade" placeholder="Cidade">
+    <input type="text" id="estado" placeholder="Estado">
+    <input type="text" id="complemento" placeholder="Complemento">
+    <input type="text" id="usuario" placeholder="Usuário" required>
+    <input type="password" id="senha" placeholder="Senha" required>
+    <select id="plano">
+        <option value="Gratuito">Gratuito</option>
+        <option value="Plus">Plus</option>
+        <option value="Premium">Premium</option>
+    </select>
+    <label>Pagamento (para planos pagos):</label>
+    <select id="pagamento">
+        <option value="pix">Pix (1 mês)</option>
+        <option value="cartao">Cartão de crédito</option>
+    </select>
+    <button type="submit">Registrar</button>
+</form>
+<script>
+document.getElementById('form-register').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nome = document.getElementById('nome').value;
+    const cpf = document.getElementById('cpf').value;
+    const cnpj = document.getElementById('cnpj').value;
+    const cep = document.getElementById('cep').value;
+    const logradouro = document.getElementById('logradouro').value;
+    const numero = document.getElementById('numero').value;
+    const bairro = document.getElementById('bairro').value;
+    const cidade = document.getElementById('cidade').value;
+    const estado = document.getElementById('estado').value;
+    const complemento = document.getElementById('complemento').value;
+    const usuario = document.getElementById('usuario').value;
+    const senha = document.getElementById('senha').value;
+    const plano = document.getElementById('plano').value;
+    const pagamento = document.getElementById('pagamento').value;
+    const resp = await fetch('/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({nome, cpf, cnpj, usuario, senha, plano, pagamento, cep, logradouro, numero, bairro, cidade, estado, complemento})
+    });
+    const data = await resp.json();
+    alert(data.mensagem || data.erro);
+    if (data.mensagem) {
+        window.location.href = '/login';
+    }
+});
+
+document.getElementById('cnpj').addEventListener('blur', async () => {
+    const cnpj = document.getElementById('cnpj').value;
+    if (cnpj.length === 14) {
+        const r = await fetch(`/consultar_cnpj/${cnpj}`);
+        const d = await r.json();
+        if (!d.erro) {
+            const texto = `Endere\u00e7o: ${d.logradouro || ''} ${d.numero || ''}, ${d.bairro || ''} - ${d.cidade || ''}/${d.estado || ''} CEP:${d.cep || ''}. Est\u00e1 correto?`;
+            if (confirm(texto)) {
+                document.getElementById('cep').value = d.cep || '';
+                document.getElementById('logradouro').value = d.logradouro || '';
+                document.getElementById('numero').value = d.numero || '';
+                document.getElementById('bairro').value = d.bairro || '';
+                document.getElementById('cidade').value = d.cidade || '';
+                document.getElementById('estado').value = d.estado || '';
+            } else {
+                document.getElementById('cep').focus();
+            }
+        }
+    }
+});
+
+document.getElementById('cep').addEventListener('blur', async () => {
+    const cep = document.getElementById('cep').value;
+    if (cep.length >= 8) {
+        const r = await fetch(`/consultar_cep/${cep}`);
+        const d = await r.json();
+        if (!d.erro) {
+            const texto = `Endere\u00e7o: ${d.logradouro}, ${d.bairro} - ${d.cidade}/${d.estado}. Est\u00e1 correto?`;
+            if (confirm(texto)) {
+                document.getElementById('logradouro').value = d.logradouro || '';
+                document.getElementById('bairro').value = d.bairro || '';
+                document.getElementById('cidade').value = d.cidade || '';
+                document.getElementById('estado').value = d.estado || '';
+            } else {
+                document.getElementById('logradouro').focus();
+            }
+        }
+    }
+});
+</script>
+</body>
+</html>

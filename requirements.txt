@@ -1,0 +1,7 @@
+Flask
+Werkzeug
+requests
+PyJWT
+
+schedule
+twilio

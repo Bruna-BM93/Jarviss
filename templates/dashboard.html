@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; }
+        .card { border: 1px solid #ccc; margin: 8px 0; padding: 12px; }
+        .actions button { margin-right: 8px; }
+    </style>
+</head>
+<body>
+<h2 id="greeting">Bem-vindo!</h2>
+<div class="card" id="resumo"></div>
+<div class="card">
+    <h3>Tarefas do Dia</h3>
+    <ul id="tarefas"></ul>
+    <button id="ver-agenda">Ver Agenda Completa</button>
+</div>
+<div class="card" id="lembrete"></div>
+<div class="card actions">
+    <button onclick="novaReceita()">+ Receita</button>
+    <button onclick="novaDespesa()">+ Despesa</button>
+    <button onclick="novoLembrete()">+ Lembrete</button>
+    <button onclick="enviarRelatorio()">Relatório Diário</button>
+</div>
+<script>
+const token = localStorage.getItem('token');
+const usuario = localStorage.getItem('usuario');
+if (!token) location.href = '/login';
+
+function carregar() {
+  fetch('/dashboard_data?usuario=' + usuario, {headers:{'Authorization':'Bearer ' + token}})
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('resumo').innerHTML = `💰 Receita Hoje: R$ ${Number(d.receita).toFixed(2)}<br>💸 Despesa Hoje: R$ ${Number(d.despesa).toFixed(2)}<br>📊 Saldo do Dia: R$ ${Number(d.saldo).toFixed(2)}`;
+      document.getElementById('tarefas').innerHTML = d.tarefas.map(t => `<li>${t.concluida ? '✅' : '[ ]'} ${t.descricao} às ${t.hora}</li>`).join('');
+      document.getElementById('lembrete').innerText = d.proximo_lembrete ? '🔔 Próximo Lembrete: ' + d.proximo_lembrete : '';
+    });
+}
+carregar();
+</script>
+</body>
+</html>

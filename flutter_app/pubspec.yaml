@@ -1,0 +1,15 @@
+name: jarviss_app
+description: Flutter client for Jarviss backend
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: '>=2.17.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  fl_chart: ^0.60.0
+
+flutter:
+  uses-material-design: true
