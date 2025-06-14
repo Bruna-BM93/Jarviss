@@ -10,6 +10,14 @@ dependencies:
   flutter:
     sdk: flutter
   fl_chart: ^0.60.0
+  http: ^1.1.0
+  intl: ^0.18.0 # Adicionado para formatação de data
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.4.2
+  build_runner: ^2.4.6
 
 flutter:
   uses-material-design: true

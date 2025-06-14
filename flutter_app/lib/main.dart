@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'financial_chart.dart';
 import 'goal_card.dart';
-import 'bank_notifications.dart';
+// import 'bank_notifications.dart'; // Removido
+import 'screens/ia_screen.dart';
+import 'screens/transaction_list_screen.dart';
+import 'screens/interpret_notification_screen.dart'; // Importa a nova tela
 
 void main() {
   runApp(const JarvissApp());
@@ -32,14 +35,39 @@ class DashboardScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const FinancialChart(),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text('Notificações Bancárias',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ListTile( // Adiciona o ListTile para a tela de IA
+              leading: const Icon(Icons.psychology), // Ícone de IA
+              title: const Text('Assistente de IA'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const IaScreen()),
+                );
+              },
             ),
-            ...BankNotificationService.simulateIncomingNotifications()
-                .map((n) => ListTile(title: Text(n)))
-                .toList(),
+            ListTile( // Adiciona o ListTile para a tela de Transações
+              leading: const Icon(Icons.account_balance_wallet),
+              title: const Text('Minhas Transações'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TransactionListScreen()),
+                );
+              },
+            ),
+            // ListTile de Notificações Bancárias Modificado
+            ListTile(
+              leading: const Icon(Icons.receipt_long), // Ícone para interpretação
+              title: const Text('Interpretar Notificação Bancária'),
+              subtitle: const Text('Cole o texto da sua notificação para análise por IA'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const InterpretNotificationScreen()),
+                );
+              },
+            ),
+            // Removida a lista de notificações simuladas
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text('Metas Financeiras',
