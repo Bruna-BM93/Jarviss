@@ -1,25 +1,49 @@
 version: '3.8'
 
 services:
-  web:
+  app:
     build: .
     ports:
-      - "5000:5000"
-    environment:
-      # - INFINITY_PAY_TOKEN=${INFINITY_PAY_TOKEN} # Example: pass an env variable
-      # You can set INFINITY_PAY_TOKEN here directly or use an .env file
-      # For example, if you have an .env file with:
-      # INFINITY_PAY_TOKEN=your_actual_token_here
-      # Docker Compose will automatically pick it up.
-      # Alternatively, uncomment and set directly:
-      INFINITY_PAY_TOKEN: "your_infinity_pay_token_goes_here" # Replace with actual token or use .env
+      - "5000:5000" # Map host port 5000 to container port 5000 (where Gunicorn runs)
     volumes:
-      # Mount the local SQLite database file into the container for persistence
-      # This ensures that your data is not lost when the container restarts.
-      # Adjust the source path if your jarvis.db is located elsewhere locally.
-      - ./jarvis.db:/app/jarvis.db
-    # If you prefer a named volume for the database (managed by Docker):
-    # volumes:
-    #   - jarvis_data:/app
-# volumes:
-#   jarvis_data:
+      - .:/app      # Mount current directory to /app in container for live code changes
+    environment:
+      # Flask specific
+      FLASK_ENV: development # Override Dockerfile's FLASK_ENV for local development
+      FLASK_DEBUG: "1"       # Enable Flask debug mode
+      # PostgreSQL connection details
+      DB_HOST: db            # Service name of the PostgreSQL container
+      DB_NAME: jarvisdb
+      DB_USER: jarvisuser
+      DB_PASSWORD: jarvispass
+      DB_PORT: 5432
+      # Other application-specific environment variables
+      INFINITY_PAY_TOKEN: ${INFINITY_PAY_TOKEN:-your_default_token_here} # Use .env file or default
+      # The :-your_default_token_here provides a fallback if the variable isn't in the .env file
+      # It's recommended to use a .env file for sensitive tokens:
+      # Create a .env file in the same directory as docker-compose.yml with:
+      # INFINITY_PAY_TOKEN=your_actual_infinity_pay_token
+    depends_on:
+      - db          # Wait for the db service to be healthy (or just started in older versions)
+    # healthcheck: # More robust way to wait for db, but requires pg_isready in postgres container
+    #   test: ["CMD-SHELL", "pg_isready -U jarvisuser -d jarvisdb -h db"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+
+  db:
+    image: postgres:13-alpine # Using PostgreSQL 13 Alpine image
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persist PostgreSQL data
+    environment:
+      POSTGRES_DB: jarvisdb       # Database name
+      POSTGRES_USER: jarvisuser   # Username
+      POSTGRES_PASSWORD: jarvispass # Password (ensure this matches app's DB_PASSWORD)
+    ports:
+      - "5432:5432" # (Optional) Expose PostgreSQL port to the host for direct DB access
+                    # Not strictly needed for app-to-db communication within Docker network
+
+# Top-level volumes declaration for named volumes
+volumes:
+  postgres_data: # Defines the named volume 'postgres_data'
+    driver: local # Specifies the driver (optional for local volumes)
