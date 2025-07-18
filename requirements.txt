@@ -1,8 +1,14 @@
 Flask
 Werkzeug
-idfwsp-codex/criar-app-do-zero
 requests
 PyJWT
-
 gunicorn
-main
+psycopg2-binary
+Flask-SQLAlchemy
+Flask-Migrate
+openai
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+twilio
+pytest

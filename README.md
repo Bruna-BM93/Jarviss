@@ -1,76 +1,68 @@
-# Jarvis – Assistente Empresarial
+# Jarviss Backend
 
-Este repositório contém um exemplo simplificado de API em Flask para registrar usuários e empresas, realizar login, controlar planos (Gratuito, Plus e Premium) e bloquear funcionalidades em caso de inadimplência.
+This is the backend for the Jarviss application, a personal finance assistant.
 
-## Execução
+## Setup
 
-```bash
-python3 main.py
-```
+### Prerequisites
 
-idfwsp-codex/criar-app-do-zero
-Para executar em um contêiner Docker:
+- Python 3.8+
+- PostgreSQL
 
-```bash
-docker compose up --build
-```
+### Installation
 
-A aplicação será iniciada em `http://localhost:5000`.
-Visite http://localhost:5000/jarviss para acessar a interface web com uma imagem de robô inteligente.
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/your-username/jarviss-backend.git
+    ```
+2.  Create a virtual environment and activate it:
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    ```
+3.  Install the dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+4.  Create a PostgreSQL database and user:
+    ```sql
+    CREATE DATABASE jarviss;
+    CREATE USER jarviss_user WITH PASSWORD 'password';
+    GRANT ALL PRIVILEGES ON DATABASE jarviss TO jarviss_user;
+    ```
+5.  Set the environment variables. Create a `.env` file and add the following:
+    ```
+    export APP_SETTINGS="config.DevelopmentConfig"
+    export DATABASE_URL="postgresql://jarviss_user:password@localhost/jarviss"
+    export SECRET_KEY="a-very-secret-key"
+    ```
+6.  Run the database migrations:
+    ```bash
+    flask db init
+    flask db migrate
+    flask db upgrade
+    ```
+7.  Run the application:
+    ```bash
+    python main.py
+    ```
 
-O cadastro inicial solicita nome da empresa, CPF ou CNPJ, além do usuário e senha. Para planos pagos é possível escolher pagamento via **Pix** ou **cartão de crédito**. Os pagamentos são processados automaticamente pela **Infinity Pay**. Defina a variável de ambiente `INFINITY_PAY_TOKEN` com o token da sua conta para habilitar a integração. Configure também `JWT_SECRET` para personalizar a chave dos tokens. Nunca compartilhe esses segredos publicamente e utilize HTTPS em produção.
+## Deployment
 
-A aplicação será iniciada em `http://localhost:5000`.
- h109du-codex/criar-app-do-zero
-Visite http://localhost:5000/jarviss para acessar a interface web com uma imagem de robô inteligente.
+This project is configured for deployment on Render. You can deploy it by creating a new "Web Service" on Render and pointing it to your GitHub repository. Render will automatically detect the `render.yaml` file and configure the service for you.
 
- main
+You will need to set the following environment variables in the Render dashboard:
 
-O cadastro inicial solicita nome da empresa, CPF ou CNPJ, além do usuário e senha. Para planos pagos é possível escolher pagamento via **Pix** ou **cartão de crédito**. Os pagamentos são processados automaticamente pela **Infinity Pay**. Defina a variável de ambiente `INFINITY_PAY_TOKEN` com o token da sua conta para habilitar a integração.
-main
-As cobranças são emitidas em nome **Jarviss** (CNPJ `46102173000111`) e encaminhadas para a conta da tag `$nalenhacomferreira` no banco Cloudwalk (código `542`, agência `001`, conta `989248-7`).
+-   `OPENAI_API_KEY`
+-   `GOOGLE_APPLICATION_CREDENTIALS`
+-   `TWILIO_ACCOUNT_SID`
+-   `TWILIO_AUTH_TOKEN`
+-   `TWILIO_WHATSAPP_NUMBER`
 
-## Geração de APK
+## API Documentation
 
-Para criar um APK Android, pode-se utilizar [Buildozer](https://github.com/kivy/buildozer). Após instalar as dependências, execute:
+The API is documented using Postman. You can find the collection in the `docs/` directory.
 
-```bash
-buildozer init  # gera buildozer.spec
-buildozer -v android debug
-```
+## Contributing
 
-O arquivo `.apk` será gerado na pasta `bin/`. Esse procedimento requer um ambiente Linux com as dependências do Android SDK instaladas.
-idfwsp-codex/criar-app-do-zero
-
- h109du-codex/criar-app-do-zero
-main
-
-## Aplicativo móvel (Kivy)
-
-Um cliente simples em Kivy está disponível em `mobile_client/main.py`. Ele realiza login na API Flask. Para executá-lo:
-
-```bash
-pip install kivy requests
-python3 mobile_client/main.py
-```
-
-Certifique-se de que o backend Flask esteja em execução em `http://localhost:5000` ou ajuste `API_URL` no código do aplicativo.
-
-idfwsp-codex/criar-app-do-zero
-Tokens JWT são gerados no login e devem ser enviados no cabeçalho `Authorization: Bearer <token>` para acessar os demais endpoints.
-
-## Aplicativo Flutter
-
-Para demonstrar gráficos financeiros e metas em uma interface moderna, há um exemplo em Flutter dentro de `flutter_app`. Ele utiliza o pacote `fl_chart` para renderizar gráficos em tempo real e exibe notificações bancárias simuladas.
-
-Para executar o aplicativo Flutter:
-
-```bash
-cd flutter_app
-flutter run
-```
-
-É necessário ter o SDK do Flutter instalado. O `pubspec.yaml` já declara a dependência `fl_chart`.
-
-main
-main
+Please read `CONTRIBUTING.md` for details on our code of conduct, and the process for submitting pull requests to us.
