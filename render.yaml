@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: jarviss-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn main:create_app()"
+    envVars:
+      - key: APP_SETTINGS
+        value: "config.ProductionConfig"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jarviss-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_NUMBER
+        sync: false
+
+databases:
+  - name: jarviss-db
+    databaseName: jarviss
+    user: jarviss_user
